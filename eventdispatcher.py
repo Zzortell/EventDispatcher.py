@@ -1,8 +1,14 @@
 #!/usr/bin/python3.4
 # -*-coding:Utf-8 -*
 
+
 class EventDispatcher:
-	'''A very simple event dispatcher in Python'''
+	'''
+	A simple event dispatcher
+	
+	Author: Rémi Blaise (alias Zzortell) "http://php-zzortell.rhcloud.com/"
+	
+	'''
 	
 	
 	def __init__(self):
@@ -55,6 +61,7 @@ class EventDispatcher:
 		Parameters:
 		{str} 		name 	The name of the event
 		{object} 	event 	The event to dispatch
+		
 		'''
 		
 		# Iterate over priorities
