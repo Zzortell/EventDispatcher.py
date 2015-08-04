@@ -29,12 +29,15 @@ class EventDispatcher:
 		'''
 		
 		# Register listener
-		self.listeners[name] = self.listeners[name] or {}
-		self.listeners[name][priority] = self.listeners[name][priority] or []
+		if name not in self.listeners:
+			self.listeners[name] = {}
+		if priority not in self.listeners[name]:
+			self.listeners[name][priority] = []
 		self.listeners[name][priority].append(listener)
 		
 		# Register priority
-		self.listeners[name]['priorities'] = self.listeners[name]['priorities'] or []
+		if 'priorities' not in self.listeners[name]:
+			self.listeners[name]['priorities'] = []
 		if priority not in self.listeners[name]['priorities']:
 			self.listeners[name]['priorities'].append(priority)
 		
@@ -70,4 +73,3 @@ class EventDispatcher:
 			# Iterate over events
 			for listener in self.listeners[name][priority]:
 				listener(event)
-
