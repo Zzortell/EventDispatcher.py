@@ -38,6 +38,10 @@ class EventDispatcherTest(unittest.TestCase):
 		
 		self.dispatcher.dispatch('test.detach', TestEvent('detach'))
 		self.assertEqual('detach', self.listener.testStr)
+	
+	
+	def test_dispatchWhenNoneListener(self):
+		self.dispatcher.dispatch('alone')
 
 
 class TestEvent:

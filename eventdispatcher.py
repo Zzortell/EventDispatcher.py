@@ -91,9 +91,10 @@ class EventDispatcher:
 		
 		'''
 		
-		# Iterate over priorities
-		self.listeners[name]['priorities'].sort()
-		for priority in self.listeners[name]['priorities']:
-			# Iterate over events
-			for listener in self.listeners[name][priority]:
-				listener(event)
+		if name in self.listeners:
+			# Iterate over priorities
+			self.listeners[name]['priorities'].sort()
+			for priority in self.listeners[name]['priorities']:
+				# Iterate over events
+				for listener in self.listeners[name][priority]:
+					listener(event)
