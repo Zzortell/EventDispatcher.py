@@ -81,13 +81,13 @@ class EventDispatcher:
 		self.listeners[name][priority].remove(listener)
 	
 	
-	def dispatch(self, name, event):
+	def dispatch(self, name, event=None):
 		'''
 		Dispatch an event
 		
 		Parameters:
-		{str} 		name 	The name of the event
-		{object} 	event 	The event to dispatch
+		{str} 		name 			The name of the event
+		{object} 	event = None 	The event to dispatch
 		
 		'''
 		

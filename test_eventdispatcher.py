@@ -27,7 +27,7 @@ class EventDispatcherTest(unittest.TestCase):
 		self.dispatcher.listen('test.priority', self.listener.listenPriority('c'))
 		self.dispatcher.listen('test.priority', self.listener.listenPriority('b'), -1)
 		
-		self.dispatcher.dispatch('test.priority', TestEvent())
+		self.dispatcher.dispatch('test.priority')
 		self.assertEqual('abcd', self.listener.testStr)
 	
 	
