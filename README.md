@@ -35,7 +35,7 @@ dispatcher.dispatch('world.ready', { 'msg': 'Hello World!' })
 # Enjoy!
 ```
 
-? Paste this code in the console interpreter and let's play!
+Paste this code in the console interpreter and let's play!
 
 Extra feature: Propagation
 --------------------------
