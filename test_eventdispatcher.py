@@ -42,6 +42,38 @@ class EventDispatcherTest(unittest.TestCase):
 	
 	def test_dispatchWhenNoneListener(self):
 		self.dispatcher.dispatch('alone')
+	
+	
+	def test_getParent(self):
+		self.assertEqual('test.parent', self.dispatcher.getParent('test.parent.child'))
+		self.assertEqual(None, self.dispatcher.getParent('noparent'))
+		with self.assertRaises(AssertionError):
+			self.dispatcher.getParent('test.parent .childish')
+	
+	
+	def test_propagation(self):
+		self._registerListenerForPropagationTest(self.dispatcher)
+		self.dispatcher.dispatch('test.propa', TestEvent('propa-'), True)
+		self.assertEqual('propa-propa-', self.listener.testStr)
+	
+	
+	def test_globalPropagation(self):
+		dispatcher = EventDispatcher(True)
+		self._registerListenerForPropagationTest(dispatcher)
+		dispatcher.dispatch('test.propa', TestEvent('propa-'))
+		self.assertEqual('propa-propa-', self.listener.testStr)
+	
+	
+	def test_propagationOverriding(self):
+		dispatcher = EventDispatcher(True)
+		self._registerListenerForPropagationTest(dispatcher)
+		dispatcher.dispatch('test.propa', TestEvent('propa-'), False)
+		self.assertEqual('propa-', self.listener.testStr)
+	
+	
+	def _registerListenerForPropagationTest(self, dispatcher):
+		dispatcher.listen('test', self.listener.onDispatch)
+		dispatcher.listen('test.propa', self.listener.onDispatch)
 
 
 class TestEvent:

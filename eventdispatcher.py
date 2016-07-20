@@ -26,6 +26,9 @@
 #
 
 
+import re
+
+
 class EventDispatcher:
 	'''
 	A simple event dispatcher
@@ -35,7 +38,16 @@ class EventDispatcher:
 	'''
 	
 	
-	def __init__(self):
+	def __init__(self, propagation=False):
+		'''
+		Init the event dispatcher
+		
+		Parameter:
+		{bool} propagation = False If dispatching an event should also dispatch its parents
+		
+		'''
+		
+		self.propagation = propagation
 		self.listeners = {}
 	
 	
@@ -81,16 +93,22 @@ class EventDispatcher:
 		self.listeners[name][priority].remove(listener)
 	
 	
-	def dispatch(self, name, event=None):
+	def dispatch(self, name, event=None, propagation=None):
 		'''
 		Dispatch an event
 		
+		If propagation is set, dispatch all the parent events.
+		
 		Parameters:
-		{str} 		name 			The name of the event
-		{object} 	event = None 	The event to dispatch
+		{str} 		name 				The name of the event
+		{object} 	event = None 		The event to dispatch
+		{bool} 		propagation = None 	Override self.propagation
 		
 		'''
 		
+		propagation = propagation if propagation is not None else self.propagation
+		
+		# Dispatch the event
 		if name in self.listeners:
 			# Iterate over priorities
 			self.listeners[name]['priorities'].sort()
@@ -98,3 +116,33 @@ class EventDispatcher:
 				# Iterate over events
 				for listener in self.listeners[name][priority]:
 					listener(event)
+		
+		# If propagation dispatch the parent event
+		if propagation:
+			parent_name = self.getParent(name)
+			if parent_name:
+				self.dispatch(parent_name, event)
+	
+	
+	def getParent(self, name):
+		'''
+		Get the name of the parent event
+		
+		Used if the propagation option is True.
+		The event name has to match the format "parent.event".
+		
+		Parameters:
+		{str} name The name of the event
+		
+		Return: {str} 	The name of the parent event
+				None 	If the event has no parent
+		
+		'''
+		
+		if re.search(r'^(?:\w+\.)*\w+$', name) is None:
+			raise AssertionError("The event name has to match with r'^(?:\w+\.)*\w+$'.")
+		
+		if re.search(r'\.', name):
+			return re.search(r'^((?:\w+\.)*)\w+$', name).group(1)[:-1]
+		else:
+			return None
