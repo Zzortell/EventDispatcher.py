@@ -71,6 +71,25 @@ class EventDispatcherTest(unittest.TestCase):
 		self.assertEqual('propa-', self.listener.testStr)
 	
 	
+	def test_decorator(self):
+		@self.dispatcher.on('test.decorator')
+		def listener(e):
+			self.listener.onDispatch(e)
+		self.dispatcher.dispatch('test.decorator', TestEvent('decorator'))
+		self.assertEqual('decorator', self.listener.testStr)
+	
+	
+	def test_listenAll(self):
+		self.dispatcher.listen('test.a', self.listener.onDispatch)
+		self.dispatcher.listen('all', self.listener.onDispatch)
+		self.dispatcher.dispatch('test.a', TestEvent('a'))
+		self.dispatcher.dispatch('test.b', TestEvent('b'))
+		self.dispatcher.dispatch('test.c', TestEvent('c'))
+		self.dispatcher.dispatch('test.d', TestEvent('d'))
+		self.dispatcher.dispatch('test.e', TestEvent('e'))
+		self.assertEqual('aabcde', self.listener.testStr)
+	
+	
 	def _registerListenerForPropagationTest(self, dispatcher):
 		dispatcher.listen('test', self.listener.onDispatch)
 		dispatcher.listen('test.propa', self.listener.onDispatch)

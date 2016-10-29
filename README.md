@@ -37,6 +37,24 @@ dispatcher.dispatch('world.ready', { 'msg': 'Hello World!' })
 
 ? Paste this code in the console interpreter and let's play!
 
+Extra feature: Listen all events
+--------------------------------
+
+The event name `all` is a reserved keyword. It makes you able to listen all
+emitted events:
+
+```py
+from eventdispatcher import EventDispatcher
+dispatcher = EventDispatcher()
+
+# Register a listener for all emitted events using the keyword 'all'
+dispatcher.listen('all', lambda e: print(e))
+
+# Then, the listener will be called on every trigerring
+dispatcher.dispatch('world.hi', 'Hello')
+dispatcher.dispatch('world.bye', 'Goodbye')
+```
+
 Extra feature: Propagation
 --------------------------
 
@@ -73,6 +91,23 @@ You can also set or unset propagation for each dispatching:
 dispatcher = EventDispatcher()
 
 dispatcher.dispatch('parent.child', 'event', True)
+```
+
+Extra feature: Decorator
+------------------------
+
+The event dispatcher also provide a decorator for listening events. e.g.:
+
+```py
+from eventdispatcher import EventDispatcher
+dispatcher = EventDispatcher()
+
+# Register a listener via the decorator
+@dispatcher.on('processus.done')
+def logger(e):
+    print(e)
+
+dispatcher.dispatch('processus.done', 'Hello')
 ```
 
 Links

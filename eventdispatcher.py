@@ -4,7 +4,7 @@
 
 # The MIT License (MIT)
 #
-# Copyright (c) 2015 Rémi Blaise <remi.blaise@gmx.fr> "http://php-zzortell.rhcloud.com/"
+# Copyright (c) 2015-2016 Rémi Blaise <remi.blaise@gmx.fr> "http://php-zzortell.rhcloud.com/"
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,8 @@ class EventDispatcher:
 		'''
 		Add an event listener
 		
+		If name is 'all', the listener will listen all events.
+		
 		Parameters:
 		{str} 		name 			The name of the event
 		{function} 	listener 		The event listener
@@ -71,13 +73,15 @@ class EventDispatcher:
 			self.listeners[name][priority] = []
 		self.listeners[name][priority].append(listener)
 		
-		# Register priority
-		if 'priorities' not in self.listeners[name]:
-			self.listeners[name]['priorities'] = []
-		if priority not in self.listeners[name]['priorities']:
-			self.listeners[name]['priorities'].append(priority)
-		
 		return (name, priority, listener)
+	
+	
+	def on(self, name):
+		'''Inscribe given listener, to use as decorator'''
+		def decorator(function):
+			self.listen(name, function)
+			return function
+		return decorator
 	
 	
 	def detach(self, id):
@@ -106,16 +110,35 @@ class EventDispatcher:
 		
 		'''
 		
+		if name == 'all':
+			raise ValueError("'all' is a reserved keyword, not an event name.")
 		propagation = propagation if propagation is not None else self.propagation
 		
-		# Dispatch the event
+		# Get existing keys among ('all', name)
+		names = []
+		if 'all' in self.listeners:
+			names.append('all')
 		if name in self.listeners:
-			# Iterate over priorities
-			self.listeners[name]['priorities'].sort()
-			for priority in self.listeners[name]['priorities']:
-				# Iterate over events
-				for listener in self.listeners[name][priority]:
-					listener(event)
+			names.append(name)
+		
+		# Get sorted list of priorities
+		priorities = set()
+		for name in names:
+			priorities = priorities.union(set(self.listeners[name].keys()))
+		priorities = list(priorities)
+		priorities.sort()
+		
+		# Iterate over priorities
+		for priority in priorities:
+			# Get listeners
+			listeners = []
+			for name in names:
+				if priority in self.listeners[name]:
+					listeners.extend(self.listeners[name][priority])
+			
+			# Iterate over listeners
+			for listener in listeners:
+				listener(event)
 		
 		# If propagation dispatch the parent event
 		if propagation:
